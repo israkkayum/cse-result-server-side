@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
 const fileUpload = require('express-fileupload');
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config();
 
 const app = express();
@@ -22,21 +23,28 @@ async function run() {
         const database = client.db('ImageData');
         const imageCollection = database.collection('image');
 
-        app.post('/image', async(req, res) => {
+        app.post('/image', async (req, res) => {
             const pic = req.files.image;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
             const imageBuffer = Buffer.from(encodedPic, 'base64');
-            const image = {image: imageBuffer}
+            const image = { image: imageBuffer }
             const result = await imageCollection.insertOne(image);
             res.json(result);
         });
 
-        app.get('/image', async(req, res) => {
+        app.get('/image', async (req, res) => {
             const cursor = imageCollection.find({});
             const image = await cursor.toArray();
             res.json(image);
-        })
+        });
+
+        app.delete('/image/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const result = await imageCollection.deleteOne(query);
+        res.json(result);
+        });
     }
 
     finally {
