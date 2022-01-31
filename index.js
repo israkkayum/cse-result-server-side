@@ -25,11 +25,16 @@ async function run() {
         const usersCollection = database.collection('users');
 
         app.post('/image', async (req, res) => {
+            console.log(req.files);
             const pic = req.files.image;
+            const nameInfo = pic.name;
+            const nameLength = nameInfo.length;
+            const nameSlice = nameInfo.slice(3, nameLength-3);
+            const name = nameSlice;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
             const imageBuffer = Buffer.from(encodedPic, 'base64');
-            const image = { image: imageBuffer }
+            const image = { image: imageBuffer, email: name }
             const result = await imageCollection.insertOne(image);
             res.json(result);
         });
@@ -40,10 +45,17 @@ async function run() {
             res.json(result);
         });
 
-        app.get('/image', async (req, res) => {
-            const cursor = imageCollection.find({});
-            const image = await cursor.toArray();
-            res.json(image);
+        // app.get('/image', async (req, res) => {
+        //     const cursor = imageCollection.find({});
+        //     const image = await cursor.toArray();
+        //     res.json(image);
+        // });
+
+        app.get('/image/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const result = await imageCollection.findOne(query);
+            res.json(result);
         });
 
         app.get('/users/:email', async (req, res) => {
