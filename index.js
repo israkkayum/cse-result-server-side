@@ -22,6 +22,7 @@ async function run() {
         await client.connect();
         const database = client.db('ImageData');
         const imageCollection = database.collection('image');
+        const usersCollection = database.collection('users');
 
         app.post('/image', async (req, res) => {
             const pic = req.files.image;
@@ -33,10 +34,27 @@ async function run() {
             res.json(result);
         });
 
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.json(result);
+        });
+
         app.get('/image', async (req, res) => {
             const cursor = imageCollection.find({});
             const image = await cursor.toArray();
             res.json(image);
+        });
+
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            let isAdmin = false;
+            if (user?.role === 'admin') {
+                isAdmin = true;
+            }
+            res.json({ admin: isAdmin });
         });
 
         app.delete('/image/:id', async (req, res) => {
