@@ -54,7 +54,8 @@ async function run() {
         app.get('/image/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
-            const result = await imageCollection.findOne(query);
+            const cursor = imageCollection.find(query);
+            const result = await cursor.toArray();
             res.json(result);
         });
 
