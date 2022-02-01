@@ -25,11 +25,10 @@ async function run() {
         const usersCollection = database.collection('users');
 
         app.post('/image', async (req, res) => {
-            console.log(req.files);
             const pic = req.files.image;
             const nameInfo = pic.name;
             const nameLength = nameInfo.length;
-            const nameSlice = nameInfo.slice(3, nameLength-3);
+            const nameSlice = nameInfo.slice(3, nameLength - 3);
             const name = nameSlice;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
@@ -42,6 +41,18 @@ async function run() {
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
+            res.json(result);
+        });
+
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const pic = req.files.avatar;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const updateDoc = { $set: { avatar: imageBuffer } };
+            const result = await usersCollection.updateOne(filter, updateDoc);
             res.json(result);
         });
 
@@ -63,18 +74,14 @@ async function run() {
             const email = req.params.email;
             const query = { email: email };
             const user = await usersCollection.findOne(query);
-            let isAdmin = false;
-            if (user?.role === 'admin') {
-                isAdmin = true;
-            }
-            res.json({ admin: isAdmin });
+            res.json(user);
         });
 
         app.delete('/image/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const result = await imageCollection.deleteOne(query);
-        res.json(result);
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await imageCollection.deleteOne(query);
+            res.json(result);
         });
     }
 
