@@ -53,11 +53,11 @@ async function run() {
             res.json(result);
         });
 
-        // app.get('/image', async (req, res) => {
-        //     const cursor = imageCollection.find({});
-        //     const image = await cursor.toArray();
-        //     res.json(image);
-        // });
+        app.get('/image', async (req, res) => {
+            const cursor = imageCollection.find({});
+            const image = await cursor.toArray();
+            res.json(image);
+        });
 
         app.get('/image/:email', async (req, res) => {
             const email = req.params.email;
