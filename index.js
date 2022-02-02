@@ -54,6 +54,19 @@ async function run() {
             res.json(result);
         });
 
+        app.put('/image/:id', async (req, res) => {
+            const id = req.params.id;
+            const status = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    status: status
+                }
+            };
+            const result = await imageCollection.updateOne(filter, updateDoc);
+            res.json(result);
+        });
+
         app.get('/image', async (req, res) => {
             const cursor = imageCollection.find({});
             const image = await cursor.toArray();
