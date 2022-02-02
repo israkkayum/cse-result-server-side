@@ -26,11 +26,12 @@ async function run() {
 
         app.post('/image', async (req, res) => {
             const email = req.body.email;
+            const date = req.body.date;
             const pic = req.files.image;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
             const imageBuffer = Buffer.from(encodedPic, 'base64');
-            const image = { image: imageBuffer, email}
+            const image = { image: imageBuffer, email, date}
             const result = await imageCollection.insertOne(image);
             res.json(result);
         });
