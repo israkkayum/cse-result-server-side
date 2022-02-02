@@ -27,11 +27,12 @@ async function run() {
         app.post('/image', async (req, res) => {
             const email = req.body.email;
             const date = req.body.date;
+            const status = req.body.status;
             const pic = req.files.image;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
             const imageBuffer = Buffer.from(encodedPic, 'base64');
-            const image = { image: imageBuffer, email, date}
+            const image = { image: imageBuffer, email, date, status}
             const result = await imageCollection.insertOne(image);
             res.json(result);
         });
@@ -56,11 +57,11 @@ async function run() {
 
         app.put('/image/:id', async (req, res) => {
             const id = req.params.id;
-            const status = req.body;
+            const status = req.body.status;
             const filter = { _id: ObjectId(id) };
             const updateDoc = {
                 $set: {
-                    status: status
+                    status
                 }
             };
             const result = await imageCollection.updateOne(filter, updateDoc);
