@@ -25,15 +25,12 @@ async function run() {
         const usersCollection = database.collection('users');
 
         app.post('/image', async (req, res) => {
+            const email = req.body.email;
             const pic = req.files.image;
-            const nameInfo = pic.name;
-            const nameLength = nameInfo.length;
-            const nameSlice = nameInfo.slice(3, nameLength - 3);
-            const name = nameSlice;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
             const imageBuffer = Buffer.from(encodedPic, 'base64');
-            const image = { image: imageBuffer, email: name }
+            const image = { image: imageBuffer, email}
             const result = await imageCollection.insertOne(image);
             res.json(result);
         });
